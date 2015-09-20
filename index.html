@@ -2,8 +2,8 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <link href="reset.css" rel="stylesheet">
-        <link href="style.css" rel="stylesheet">       
+        <link type="text/css" href="reset.css" rel="stylesheet">
+        <link type="text/css" href="style.css" rel="stylesheet">       
         <title>
             Practice HTML and CSS
         </title>
@@ -20,19 +20,16 @@
         <p>
             Both you and the evil wizard are trapped in a huge mansion with many rooms filled with magical items which can help you or destroy you.
         </p>
+        <br />
         <p>
             You start the game in a random room with a magic wand which can shoot fireballs.  The evil wizard will start in a random room with a magic wand which can shoot lightning bolts.  You and the wizard may pick up any magic items in any of the rooms that you occupy during the game.  After each clock cycle, both you and the evil wizard will jump to a randomly selected room which must be adjacent to the rooms that you both previously occupied.
         </p>
+        <br />
         <p>
             If you and the evil wizard happen to land in the same room, a duel between the two of you will begin.  The duel will be turn-based with you making the first move.  You can use any magic items that you're carrying to attack the evil wizard or defend yourself from an attack.  The evil wizard can also use his items to attack and defend.  The game ends when one of you is destroyed.
         </p>
         </div>
-        <div class="room">
-            <h3 id="label">Kitchen</h3>
-        </div>
-        </div>
-        <div class="room">
-            <h3 id="label">Kitchen</h3>
-        </div>
+        <div class="status_div" id="player_status">HP</div>
+        <div class="status_div" id="opponent_status"></div>
     </body>
 </html>
