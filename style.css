@@ -1,6 +1,6 @@
 body {
     background-color: cyan;
-    font: sans-serif;
+    font-family: sans-serif;
 }
 
 #gametitle {
@@ -39,6 +39,7 @@ body {
     text-align: center;
     line-height: 200px;
     font-size: 1.5em;
+    border: 2px solid black;
 }
 
 #player_status {
@@ -47,4 +48,22 @@ body {
 
 #opponent_status {
     background: red;
+}
+
+#turn {
+    height: 30px;
+    width: 180px;
+    margin: 0 0 0 150px;
+    padding: 5px 0 0 30px;
+    background-color: green;
+    border: 2px solid black;
+    border-radius: 20px;
+    color: white;
+    font-size: 1.5em;
+}
+
+#status_info {
+    font-weight: bold;
+    font-size: 1.5em;
+    margin: 40px;
 }
