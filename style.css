@@ -31,15 +31,16 @@ body {
 
 .status_div {
     width: 200px;
-    height: 200px;
+    height: 150px;
     border-radius: 100px;
     color: white;
     float: left;
     margin: 20px;
     text-align: center;
-    line-height: 200px;
+    line-height: 50px;
     font-size: 1.5em;
     border: 2px solid black;
+    padding-top: 50px;
 }
 
 #player_status {
@@ -50,10 +51,10 @@ body {
     background: red;
 }
 
-#turn {
+.button_style {
     height: 30px;
     width: 180px;
-    margin: 0 0 0 150px;
+    margin: 0 0 10px 150px;
     padding: 5px 0 0 30px;
     background-color: green;
     border: 2px solid black;
@@ -63,6 +64,19 @@ body {
 }
 
 #status_info {
+    font-weight: bold;
+    font-size: 1.5em;
+    margin: 40px;
+    height: 20px;
+}
+
+#p_status_info {
+    font-weight: bold;
+    font-size: 1.5em;
+    margin: 40px;
+}
+
+#o_status_info {
     font-weight: bold;
     font-size: 1.5em;
     margin: 40px;
