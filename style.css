@@ -20,7 +20,7 @@ body {
 .room {
     background-color: white;
     width: 10px;
-    border: 20px solid ;
+    border: 20px solid black;
     padding: 50px;
     margin: 50px;
 }
@@ -34,6 +34,7 @@ body {
     height: 150px;
     border-radius: 100px;
     color: white;
+    position: relative;
     float: left;
     margin: 20px;
     text-align: center;
@@ -41,6 +42,10 @@ body {
     font-size: 1.5em;
     border: 2px solid black;
     padding-top: 50px;
+}
+
+#status_messages {
+    float: left;
 }
 
 #player_status {
@@ -51,10 +56,14 @@ body {
     background: red;
 }
 
+.clear_float {
+    clear: both;
+}
+
 .button_style {
     height: 30px;
     width: 180px;
-    margin: 0 0 10px 150px;
+    margin: 0 0 10px 10px;
     padding: 5px 0 0 30px;
     background-color: green;
     border: 2px solid black;
@@ -63,11 +72,10 @@ body {
     font-size: 1.5em;
 }
 
-#status_info {
+#game_status_info {
     font-weight: bold;
     font-size: 1.5em;
     margin: 40px;
-    height: 20px;
 }
 
 #p_status_info {
