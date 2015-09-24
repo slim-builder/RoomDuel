@@ -66,6 +66,26 @@ function Wizard(type) {
         this.hp = 20;
         this.emptyPocket();
     };
+    
+    this.attack = function () {
+        var damage = Math.floor(6*Math.random()) + 1;
+        if (!Math.floor(5*Math.random()))
+        {
+            damage = -damage;
+            if (this.type === "Player")
+                document.getElementById("o_status_info").innerHTML = "Absorb heat energy! Opponent gains " + -damage + " HP!";
+            else if (this.type === "Opponent")
+                document.getElementById("p_status_info").innerHTML = "Absorb electrical power! Player gains " + -damage + " HP!";
+        }
+        else
+        {
+            if (this.type === "Player")
+                document.getElementById("o_status_info").innerHTML = "Fireball explodes! Opponent loses " + damage + " HP!";
+            else if (this.type === "Opponent")
+                document.getElementById("p_status_info").innerHTML = "Lightning flashes! Player loses " + damage + " HP!";
+        }
+        return damage;
+    };
 }
 
 var player = new Wizard("Player");
@@ -77,9 +97,36 @@ opponent.pickUpItem();
 document.getElementById("player_hp").innerHTML = player.getHp();
 document.getElementById("opponent_hp").innerHTML = opponent.getHp();
 
-var damageToPlayer;
-var damageToOpponent;
 var gameOver = false;
+
+function isGameOver(damage, attacker, defender) {
+    var gameOverFlag = false;
+    if (defender.getHp() - damage <= 0 && attacker.getHp() <= 0)
+    {
+        document.getElementById("game_status_info").innerHTML = "It's a tie!";
+        attacker.setHp(0);
+        defender.setHp(0);
+        gameOverFlag = true;
+    }
+    else if (defender.getHp() - damage <= 0)
+    {
+        document.getElementById("game_status_info").innerHTML = attacker.type + " Wins! " + defender.type + " Faints!";
+        defender.setHp(0);
+        gameOverFlag = true;
+    }
+    else if (attacker.getHp() <= 0)
+    {
+        document.getElementById("game_status_info").innerHTML = defender.type + " Wins! " + attacker.type + " Faints!";
+        attacker.setHp(0);
+        gameOverFlag = true;
+    }
+    else
+    {
+        defender.setHp(defender.getHp()-damage);
+        gameOverFlag = false;
+    }
+    return gameOverFlag;
+}
 
 document.getElementById("reset").onclick=function() {
     player.reset();
@@ -94,69 +141,28 @@ document.getElementById("reset").onclick=function() {
     document.getElementById("o_status_info").innerHTML = "";
 };
 
-document.getElementById("turn").onclick = function() {
-    var afterItemDamage;
+document.getElementById("turn").onclick=function() {
+    var damage;
     if (gameOver === false)
     {
         document.getElementById("game_status_info").innerHTML = "";
         document.getElementById("p_status_info").innerHTML = "";
         document.getElementById("o_status_info").innerHTML = "";
-        damageToPlayer = Math.floor(6*Math.random()) + 1;
-        damageToOpponent = Math.floor(6*Math.random()) + 1;
-        if (!Math.floor(5*Math.random()))
-        {
-            damageToPlayer = -damageToPlayer;
-            document.getElementById("p_status_info").innerHTML = "Absorb electrical power! Player gains " + -damageToPlayer + " HP!";
-        }
-        else
-        {
-            afterItemDamage = player.useItem(damageToPlayer);
-            if (afterItemDamage === damageToPlayer)
-                document.getElementById("p_status_info").innerHTML = "Lightning strikes! Player loses " + damageToPlayer + " HP!";
-            else
-                damageToPlayer = afterItemDamage;
-        }
-        if (!Math.floor(5*Math.random()))
-        {
-            damageToOpponent = -damageToOpponent;
-            document.getElementById("o_status_info").innerHTML = "Absorb heat energy! Opponent gains " + -damageToOpponent + " HP!";
-        }
-        else
-        {
-            afterItemDamage = opponent.useItem(damageToOpponent);
-            if (afterItemDamage === damageToOpponent)
-                document.getElementById("o_status_info").innerHTML = "Fireball explodes! Opponent loses " + damageToOpponent + " HP!";
-            else
-                damageToOpponent = afterItemDamage;
-        }
-        
-        if (player.getHp() - damageToPlayer <= 0 && opponent.getHp() - damageToOpponent <= 0)
-        {
-            document.getElementById("game_status_info").innerHTML = "It's a tie!";
-            player.setHp(0);
-            opponent.setHp(0);
-            gameOver = true;
-        }
-        else if (player.getHp() - damageToPlayer <= 0)
-        {
-            document.getElementById("game_status_info").innerHTML = "Opponent Wins! Player Faints!";
-            player.setHp(0);
-            opponent.setHp(opponent.getHp()-damageToOpponent);
-            gameOver = true;
-        }
-        else if (opponent.getHp() - damageToOpponent <= 0)
-        {
-            document.getElementById("game_status_info").innerHTML = "Player Wins! Opponent Faints!";
-            player.setHp(player.getHp()-damageToPlayer);
-            opponent.setHp(0);
-            gameOver = true;
-        }
-        else
-        {
-            player.setHp(player.getHp()-damageToPlayer);
-            opponent.setHp(opponent.getHp()-damageToOpponent);
-        }
+        damage = player.attack();
+        gameOver = isGameOver(damage, player, opponent);
         document.getElementById("player_hp").innerHTML = player.getHp();
         document.getElementById("opponent_hp").innerHTML = opponent.getHp();
+    }
+    if (gameOver === false)
+    {
+        setTimeout(function() {
+            document.getElementById("game_status_info").innerHTML = "";
+            document.getElementById("p_status_info").innerHTML = "";
+            document.getElementById("o_status_info").innerHTML = "";
+            damage = opponent.attack();
+            gameOver = isGameOver(damage, opponent, player);
+            document.getElementById("player_hp").innerHTML = player.getHp();
+            document.getElementById("opponent_hp").innerHTML = opponent.getHp()
+        }, 4000);
     }
 };
