@@ -44,10 +44,6 @@ body {
     padding-top: 50px;
 }
 
-#status_messages {
-    float: left;
-}
-
 #player_status {
     background: blue;
 }
