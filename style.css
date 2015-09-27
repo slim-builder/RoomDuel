@@ -44,6 +44,32 @@ body {
     padding-top: 50px;
 }
 
+#items_div {
+    width: 400px;
+    padding-top: 18px;
+    float: left;
+}
+
+.item_div {
+    width: 150px;
+    height: 50px;
+    border-radius: 100px;
+    color: white;
+    margin: 20px;
+    text-align: center;
+    line-height: 40px;
+    font-size: 1em;
+    border: 4px solid black;
+    padding-top: 10px;
+    background: gray;
+    float: left;
+}
+
+#wizard_status_div {
+    width: 500px;
+    float: left;
+}
+
 #player_status {
     background: blue;
 }
@@ -68,20 +94,15 @@ body {
     font-size: 1.5em;
 }
 
-#game_status_info {
+#game_over_info {
     font-weight: bold;
     font-size: 1.5em;
     margin: 40px;
+    float: left;
 }
 
-#p_status_info {
+.status_info {
     font-weight: bold;
-    font-size: 1.5em;
-    margin: 40px;
-}
-
-#o_status_info {
-    font-weight: bold;
-    font-size: 1.5em;
+    font-size: 1.2em;
     margin: 40px;
 }
