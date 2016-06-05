@@ -1,11 +1,15 @@
 body {
-    background-color: cyan;
+    background-color: white;
     font-family: sans-serif;
 }
 
 #gametitle {
+    margin: auto;
+    text-align: center;
+}
+
+#gametitleheading {
     font-size: 40px;
-    margin: 10px;
 }
 
 .subtitle {
@@ -29,25 +33,37 @@ body {
     text-align: center;
 }
 
-.status_div {
-    width: 200px;
-    height: 150px;
-    border-radius: 100px;
-    color: white;
+#game_div {
     position: relative;
-    float: left;
+}
+
+.wizard_div {
+    background-color: brown;
+    border: 5px solid black;
+    margin: 10px;
+    padding-right: 10px;
+    padding-left: 10px;
+    width: 300px;
+    position: absolute;
+}
+
+#opponent_wizard_div {
+    top: 0px;
+    left: 350px;
+}
+
+.status_div {
+    color: white;
     margin: 20px;
     text-align: center;
     line-height: 50px;
     font-size: 1.5em;
     border: 2px solid black;
-    padding-top: 50px;
+    border-radius: 100px;
+    padding: 20px;
 }
 
 #items_div {
-    width: 400px;
-    padding-top: 18px;
-    float: left;
 }
 
 .item_div {
@@ -62,7 +78,7 @@ body {
     border: 4px solid black;
     padding-top: 10px;
     background: gray;
-    float: left;
+    position: relative;
 }
 
 #wizard_status_div {
@@ -83,26 +99,43 @@ body {
 }
 
 .button_style {
-    height: 30px;
-    width: 180px;
     margin: 0 0 10px 10px;
-    padding: 5px 0 0 30px;
+    padding: 5px 20px;
     background-color: green;
     border: 2px solid black;
     border-radius: 20px;
     color: white;
     font-size: 1.5em;
+    position: relative;
+    text-align: center;
 }
 
 #game_over_info {
     font-weight: bold;
     font-size: 1.5em;
     margin: 40px;
-    float: left;
 }
 
 .status_info {
     font-weight: bold;
     font-size: 1.2em;
     margin: 40px;
+}
+
+.sublabel {
+    color: white;
+    margin: auto;
+    text-align: center;
+}
+
+#duel_status_div {
+    background-color: brown;
+    color: white;
+    border: 5px solid black;
+    position: absolute;
+    top: 600px;
+}
+
+#reset {
+  width: 200px;
 }
