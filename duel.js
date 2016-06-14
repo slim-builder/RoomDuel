@@ -29,28 +29,39 @@ function MagicItem(type, category) {
     }
 }
 
-function Wizard(type) {
+function Wizard(type, hp, pocket, selectedItem) {
     this.type = type;
-    this.hp = 20;
-    this.pocket = new Array();
-    this.selectedItem = new MagicItem(0, "Consumable");
+    this.hp = hp;
+    this.pocket = pocket;
+    this.selectedItem = selectedItem;
     
+    this.session = function() {
+        if (this.type === "Player")
+            sessionStorage.player = JSON.stringify(this);
+        else if (this.type === "Opponent")
+            sessionStorage.opponent = JSON.stringify(this);
+    };
+
     this.getHp = function() {
         return this.hp;
     };
 
     this.setHp = function(hp) {
         this.hp = hp;
+        this.session();
     };
     
     this.pickUpItem = function() {
-        this.pocket.push(new MagicItem(Math.floor(3*Math.random()+1), "Consumable"));
+        var magicItem = new MagicItem(Math.floor(3*Math.random()+1), "Consumable");
+        this.pocket.push(magicItem);
+        this.session();
     };
     
     this.selectItem = function(index) {
         this.pocket.splice(index, 0, new MagicItem(0, "Consumable"));
         var tempArray = this.pocket.splice(index+1,1);
         this.selectedItem = tempArray[0];
+        this.session();
     };
     
     this.getSelectedItem = function() {
@@ -69,13 +80,15 @@ function Wizard(type) {
     this.emptyPocket = function() {
         while (this.pocket.length > 0)
             this.pocket.pop();
+        this.session();
     };
     
     this.reset = function() {
         this.hp = 20;
         this.emptyPocket();
+        this.session();
     };
-    
+
     this.attack = function(wizard) {
         var damage = Math.floor(6*Math.random()) + 1;
         if (this.type === "Player")
@@ -96,6 +109,7 @@ function Wizard(type) {
             else
                 document.getElementById("p_status_info").innerHTML += "The attack causes the player to gain " + -damage + " HP! ";
         }
+        this.session();
         return damage;
     };
 }
@@ -141,23 +155,96 @@ Wizard.prototype.useItem = function(damage) {
     }
     else
     {
-        //document.getElementById(whichStatusInfo).innerHTML += this.type + " has no items to use! ";
         return damage;
     }
 };
 
-var player = new Wizard("Player");
-var opponent = new Wizard("Opponent");
+if (typeof(sessionStorage.player) === "undefined")
+{
+    var play = new Wizard("Player", 20, new Array(), new MagicItem(0, "Consumable"));
+    for (var i = 0; i < 4; i++)
+        play.pickUpItem();
+    sessionStorage.player = JSON.stringify(play);
+}
+if (typeof(sessionStorage.opponent) === "undefined")
+{
+    var oppo = new Wizard("Opponent", 20, new Array(), new MagicItem(0, "Consumable"));
+    for (var i = 0; i < 4; i++)
+        oppo.pickUpItem();
+    sessionStorage.opponent = JSON.stringify(oppo);
+}
 
-player.pickUpItem();
-player.pickUpItem();
-player.pickUpItem();
-player.pickUpItem();
+var jsonPlayer = JSON.parse(sessionStorage.player);
+var jsonPlayerPocket = new Array();
+for (var i = 0; i < jsonPlayer.pocket.length; i++)
+{
+    switch (jsonPlayer.pocket[i].type)
+    {
+      case "Negate Attack":
+          jsonPlayerPocket.push(new MagicItem(1, "Consumable"));
+          break;
+      case "Minor Heal":
+          jsonPlayerPocket.push(new MagicItem(2, "Consumable"));
+          break;
+      case "Absorb Energy":
+          jsonPlayerPocket.push(new MagicItem(3, "Consumable"));
+          break;
+      default:
+          jsonPlayerPocket.push(new MagicItem(0, "Consumable"));
+    }
+}
+    switch (jsonPlayer.selectedItem.type)
+    {
+      case "Negate Attack":
+          jsonPlayer.selectedItem = new MagicItem(1, "Consumable");
+          break;
+      case "Minor Heal":
+          jsonPlayer.selectedItem = new MagicItem(2, "Consumable");
+          break;
+      case "Absorb Energy":
+          jsonPlayer.selectedItem = new MagicItem(3, "Consumable");
+          break;
+      default:
+          jsonPlayer.selectedItem = new MagicItem(0, "Consumable");
+    }
+var jsonOpponent = JSON.parse(sessionStorage.opponent);
+var jsonOpponentPocket = new Array();
+for (var k = 0; k < jsonOpponent.pocket.length; k++)
+{
+    switch (jsonOpponent.pocket[k].type)
+    {
+      case "Negate Attack":
+          jsonOpponentPocket.push(new MagicItem(1, "Consumable"));
+          break;
+      case "Minor Heal":
+          jsonOpponentPocket.push(new MagicItem(2, "Consumable"));
+          break;
+      case "Absorb Energy":
+          jsonOpponentPocket.push(new MagicItem(3, "Consumable"));
+          break;
+      default:
+          jsonOpponentPocket.push(new MagicItem(0, "Consumable"));
+    }
+}
+    switch (jsonOpponent.selectedItem.type)
+    {
+      case "Negate Attack":
+          jsonOpponent.selectedItem = new MagicItem(1, "Consumable");
+          break;
+      case "Minor Heal":
+          jsonOpponent.selectedItem = new MagicItem(2, "Consumable");
+          break;
+      case "Absorb Energy":
+          jsonOpponent.selectedItem = new MagicItem(3, "Consumable");
+          break;
+      default:
+          jsonOpponent.selectedItem = new MagicItem(0, "Consumable");
+    }
 
-opponent.pickUpItem();
-opponent.pickUpItem();
-opponent.pickUpItem();
-opponent.pickUpItem();
+var player = new Wizard(jsonPlayer.type, jsonPlayer.hp, jsonPlayerPocket,
+                        jsonPlayer.selectedItem);
+var opponent = new Wizard(jsonOpponent.type, jsonOpponent.hp,
+                          jsonOpponentPocket, jsonOpponent.selectedItem);
 
 var itemTypesArray = player.getInitialPocketItems();
 document.getElementById("item1").innerHTML = itemTypesArray[0];
@@ -363,7 +450,7 @@ document.getElementById("turn").onclick=function() {
         if (gameOver === false)
         {
             document.getElementById("p_status_info").innerHTML = "Opponent Responds With...   ";
-            if (opponentItemSelection < 4)// && Math.floor(2*Math.random()+1))
+            if (opponentItemSelection < 4)
             {
                 opponent.selectItem(opponentItemSelection);
                 opponentItemSelection++;
