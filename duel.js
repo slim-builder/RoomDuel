@@ -1,32 +1,8 @@
+var itemTypes = ["Invalid Item", "Negate Attack", "Minor Heal", "Absorb Energy"];
+
 function MagicItem(type, category) {
-    switch (type)
-    {
-        case 1:
-            this.type = "Negate Attack";
-            break;
-        case 2:
-            this.type = "Minor Heal";
-            break;
-        case 3:
-            this.type = "Absorb Energy";
-            break;
-        default:
-            this.type = "Invalid Item";
-    }
-    
+    this.type = type;
     this.category = category;
-    
-    this.getType = function() {
-        return this.type;
-    }
-    
-    this.setType = function(type) {
-        this.type = type;
-    }
-    
-    this.getCategory = function() {
-        return this.category;
-    }
 }
 
 function Wizard(type, hp, pocket, selectedItem) {
@@ -52,13 +28,13 @@ function Wizard(type, hp, pocket, selectedItem) {
     };
     
     this.pickUpItem = function() {
-        var magicItem = new MagicItem(Math.floor(3*Math.random()+1), "Consumable");
+        var magicItem = new MagicItem(itemTypes[Math.floor(3*Math.random()+1)], "Consumable");
         this.pocket.push(magicItem);
         this.session();
     };
     
     this.selectItem = function(index) {
-        this.pocket.splice(index, 0, new MagicItem(0, "Consumable"));
+        this.pocket.splice(index, 0, new MagicItem(itemTypes[0], "Consumable"));
         var tempArray = this.pocket.splice(index+1,1);
         this.selectedItem = tempArray[0];
         this.session();
@@ -72,7 +48,7 @@ function Wizard(type, hp, pocket, selectedItem) {
         var itemTypeArray = new Array();
         for (var i = 0; i < this.pocket.length; i++)
         {
-            itemTypeArray.push(this.pocket[i].getType());
+            itemTypeArray.push(this.pocket[i].type);
         }
         return itemTypeArray;
     };
@@ -140,17 +116,17 @@ Wizard.prototype.useItem = function(damage) {
         whichStatusInfo = "p_status_info";
     else if (this.type === "Opponent")
         whichStatusInfo = "o_status_info";
-    if (this.selectedItem.getType() != "Invalid Item")
+    if (this.selectedItem.type != "Invalid Item")
     {
         document.getElementById(whichStatusInfo).innerHTML += this.type + " uses an item!";
         newDamage = this.selectedItem.activate(this, damage);
-        if (this.selectedItem.getType() === "Negate Attack")
-            document.getElementById(whichStatusInfo).innerHTML += " The item is " + this.selectedItem.getType() + "! " + this.type + " takes no damage! ";
-        else if (this.selectedItem.getType() === "Minor Heal")
-            document.getElementById(whichStatusInfo).innerHTML += " The item is " + this.selectedItem.getType() + "! " + this.type + " gains 5 HP! ";
-        else if (this.selectedItem.getType() === "Absorb Energy")
-            document.getElementById(whichStatusInfo).innerHTML += " The item is " + this.selectedItem.getType() + "! ";
-        this.selectedItem.setType("Invalid Item");
+        if (this.selectedItem.type === "Negate Attack")
+            document.getElementById(whichStatusInfo).innerHTML += " The item is " + this.selectedItem.type + "! " + this.type + " takes no damage! ";
+        else if (this.selectedItem.type === "Minor Heal")
+            document.getElementById(whichStatusInfo).innerHTML += " The item is " + this.selectedItem.type + "! " + this.type + " gains 5 HP! ";
+        else if (this.selectedItem.type === "Absorb Energy")
+            document.getElementById(whichStatusInfo).innerHTML += " The item is " + this.selectedItem.type + "! ";
+        this.selectedItem.type = "Invalid Item";
         return newDamage;
     }
     else
@@ -161,14 +137,14 @@ Wizard.prototype.useItem = function(damage) {
 
 if (typeof(sessionStorage.player) === "undefined")
 {
-    var play = new Wizard("Player", 20, new Array(), new MagicItem(0, "Consumable"));
+    var play = new Wizard("Player", 20, new Array(), new MagicItem(itemTypes[0], "Consumable"));
     for (var i = 0; i < 4; i++)
         play.pickUpItem();
     sessionStorage.player = JSON.stringify(play);
 }
 if (typeof(sessionStorage.opponent) === "undefined")
 {
-    var oppo = new Wizard("Opponent", 20, new Array(), new MagicItem(0, "Consumable"));
+    var oppo = new Wizard("Opponent", 20, new Array(), new MagicItem(itemTypes[0], "Consumable"));
     for (var i = 0; i < 4; i++)
         oppo.pickUpItem();
     sessionStorage.opponent = JSON.stringify(oppo);
@@ -181,31 +157,31 @@ for (var i = 0; i < jsonPlayer.pocket.length; i++)
     switch (jsonPlayer.pocket[i].type)
     {
       case "Negate Attack":
-          jsonPlayerPocket.push(new MagicItem(1, "Consumable"));
+          jsonPlayerPocket.push(new MagicItem(itemTypes[1], "Consumable"));
           break;
       case "Minor Heal":
-          jsonPlayerPocket.push(new MagicItem(2, "Consumable"));
+          jsonPlayerPocket.push(new MagicItem(itemTypes[2], "Consumable"));
           break;
       case "Absorb Energy":
-          jsonPlayerPocket.push(new MagicItem(3, "Consumable"));
+          jsonPlayerPocket.push(new MagicItem(itemTypes[3], "Consumable"));
           break;
       default:
-          jsonPlayerPocket.push(new MagicItem(0, "Consumable"));
+          jsonPlayerPocket.push(new MagicItem(itemTypes[0], "Consumable"));
     }
 }
     switch (jsonPlayer.selectedItem.type)
     {
       case "Negate Attack":
-          jsonPlayer.selectedItem = new MagicItem(1, "Consumable");
+          jsonPlayer.selectedItem = new MagicItem(itemTypes[1], "Consumable");
           break;
       case "Minor Heal":
-          jsonPlayer.selectedItem = new MagicItem(2, "Consumable");
+          jsonPlayer.selectedItem = new MagicItem(itemTypes[2], "Consumable");
           break;
       case "Absorb Energy":
-          jsonPlayer.selectedItem = new MagicItem(3, "Consumable");
+          jsonPlayer.selectedItem = new MagicItem(itemTypes[3], "Consumable");
           break;
       default:
-          jsonPlayer.selectedItem = new MagicItem(0, "Consumable");
+          jsonPlayer.selectedItem = new MagicItem(itemTypes[0], "Consumable");
     }
 var jsonOpponent = JSON.parse(sessionStorage.opponent);
 var jsonOpponentPocket = new Array();
@@ -214,31 +190,31 @@ for (var k = 0; k < jsonOpponent.pocket.length; k++)
     switch (jsonOpponent.pocket[k].type)
     {
       case "Negate Attack":
-          jsonOpponentPocket.push(new MagicItem(1, "Consumable"));
+          jsonOpponentPocket.push(new MagicItem(itemTypes[1], "Consumable"));
           break;
       case "Minor Heal":
-          jsonOpponentPocket.push(new MagicItem(2, "Consumable"));
+          jsonOpponentPocket.push(new MagicItem(itemTypes[2], "Consumable"));
           break;
       case "Absorb Energy":
-          jsonOpponentPocket.push(new MagicItem(3, "Consumable"));
+          jsonOpponentPocket.push(new MagicItem(itemTypes[3], "Consumable"));
           break;
       default:
-          jsonOpponentPocket.push(new MagicItem(0, "Consumable"));
+          jsonOpponentPocket.push(new MagicItem(itemTypes[0], "Consumable"));
     }
 }
     switch (jsonOpponent.selectedItem.type)
     {
       case "Negate Attack":
-          jsonOpponent.selectedItem = new MagicItem(1, "Consumable");
+          jsonOpponent.selectedItem = new MagicItem(itemTypes[1], "Consumable");
           break;
       case "Minor Heal":
-          jsonOpponent.selectedItem = new MagicItem(2, "Consumable");
+          jsonOpponent.selectedItem = new MagicItem(itemTypes[2], "Consumable");
           break;
       case "Absorb Energy":
-          jsonOpponent.selectedItem = new MagicItem(3, "Consumable");
+          jsonOpponent.selectedItem = new MagicItem(itemTypes[3], "Consumable");
           break;
       default:
-          jsonOpponent.selectedItem = new MagicItem(0, "Consumable");
+          jsonOpponent.selectedItem = new MagicItem(itemTypes[0], "Consumable");
     }
 
 var player = new Wizard(jsonPlayer.type, jsonPlayer.hp, jsonPlayerPocket,
@@ -324,7 +300,7 @@ document.getElementById("reset").onclick=function() {
     document.getElementById("item2").innerHTML = itemTypesArray[1];
     document.getElementById("item3").innerHTML = itemTypesArray[2];
     document.getElementById("item4").innerHTML = itemTypesArray[3];
-    player.selectedItem.setType("Invalid Item");
+    player.selectedItem.type = "Invalid Item";
     opponentItemSelection = 0;
 };
 
