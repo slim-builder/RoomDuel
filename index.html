@@ -2,9 +2,23 @@
 <html>
     <head>
         <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <!--<link type="text/css" href="reset.css" rel="stylesheet">-->
         <link type="text/css" href="style.css" rel="stylesheet">     
-        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js">
+        </script>
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js">
+        </script>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous">
+        </script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="icon" href="../../favicon.ico">
         <title>
             Room Duel
         </title>
@@ -32,18 +46,13 @@
             If you and the evil wizard happen to land in the same room, a duel between the two of you will begin.  The duel will be turn-based with you making the first move.  You can use any magic items that you're carrying to attack the evil wizard or defend yourself from an attack.  The evil wizard can also use his items to attack and defend.  The game ends when one of you faints.
         </p>
         </div>
-        <div class="button_style" id="reset">Reset Game</div>
+        <input type="button" id="reset" value="Reset Game">
             <div id="game_div">
             <div class="wizard_div" id="player_wizard_div">
                 <h1 class="sublabel">Player</h1>
                 <div class="status_div" id="player_status">Hit Points: <span id="player_hp"></span></div>
-                <div id="items_div">
-                    <div class="item_div" id="item1"></div>
-                    <div class="item_div" id="item2"></div>
-                    <div class="item_div" id="item3"></div>
-                    <div class="item_div" id="item4"></div>
-                </div>
-                <div class="button_style" id="turn">Attack opponent!</div>
+                <div id="pocket"></div>
+                <input type="button" id="turn" value="Attack!">
             </div>
             <div class="wizard_div" id="opponent_wizard_div">
                 <h1 class="sublabel">Opponent</h1>

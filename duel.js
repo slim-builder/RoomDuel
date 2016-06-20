@@ -1,4 +1,4 @@
-var itemTypes = ["Invalid Item", "Negate Attack", "Minor Heal", "Absorb Energy"];
+var itemTypes = ["Negate Attack", "Minor Heal", "Absorb Energy"];
 
 function MagicItem(type, category) {
     this.type = type;
@@ -18,39 +18,15 @@ function Wizard(type, hp, pocket, selectedItem) {
             sessionStorage.opponent = JSON.stringify(this);
     };
 
-    this.getHp = function() {
-        return this.hp;
-    };
-
     this.setHp = function(hp) {
         this.hp = hp;
         this.session();
     };
     
     this.pickUpItem = function() {
-        var magicItem = new MagicItem(itemTypes[Math.floor(3*Math.random()+1)], "Consumable");
+        var magicItem = new MagicItem(itemTypes[Math.floor(3*Math.random())], "Consumable");
         this.pocket.push(magicItem);
         this.session();
-    };
-    
-    this.selectItem = function(index) {
-        this.pocket.splice(index, 0, new MagicItem(itemTypes[0], "Consumable"));
-        var tempArray = this.pocket.splice(index+1,1);
-        this.selectedItem = tempArray[0];
-        this.session();
-    };
-    
-    this.getSelectedItem = function() {
-        return this.selectedItem;
-    }
-    
-    this.getInitialPocketItems = function() {
-        var itemTypeArray = new Array();
-        for (var i = 0; i < this.pocket.length; i++)
-        {
-            itemTypeArray.push(this.pocket[i].type);
-        }
-        return itemTypeArray;
     };
     
     this.emptyPocket = function() {
@@ -98,7 +74,7 @@ MagicItem.prototype.activate = function(wizard, damage) {
             actualDamage = 0;
             break;
         case "Minor Heal":
-            wizard.setHp(wizard.getHp() + 5);
+            wizard.setHp(wizard.hp + 5);
             break;
         case "Absorb Energy":
             actualDamage = -damage;
@@ -111,14 +87,14 @@ MagicItem.prototype.activate = function(wizard, damage) {
 
 Wizard.prototype.useItem = function(damage) {
     var whichStatusInfo;
-    var newDamage;
+    var newDamage = damage;
     if (this.type === "Player")
         whichStatusInfo = "p_status_info";
     else if (this.type === "Opponent")
         whichStatusInfo = "o_status_info";
-    if (this.selectedItem.type != "Invalid Item")
+    if (this.selectedItem)
     {
-        document.getElementById(whichStatusInfo).innerHTML += this.type + " uses an item!";
+        document.getElementById(whichStatusInfo).innerHTML += this.type + " uses an item!";    
         newDamage = this.selectedItem.activate(this, damage);
         if (this.selectedItem.type === "Negate Attack")
             document.getElementById(whichStatusInfo).innerHTML += " The item is " + this.selectedItem.type + "! " + this.type + " takes no damage! ";
@@ -126,25 +102,24 @@ Wizard.prototype.useItem = function(damage) {
             document.getElementById(whichStatusInfo).innerHTML += " The item is " + this.selectedItem.type + "! " + this.type + " gains 5 HP! ";
         else if (this.selectedItem.type === "Absorb Energy")
             document.getElementById(whichStatusInfo).innerHTML += " The item is " + this.selectedItem.type + "! ";
-        this.selectedItem.type = "Invalid Item";
-        return newDamage;
+        var selectedIndex = this.pocket.indexOf(this.selectedItem);
+        if (selectedIndex > -1)
+            this.pocket.splice(selectedIndex, 1);
     }
-    else
-    {
-        return damage;
-    }
+    this.selectedItem = null;
+    return newDamage;
 };
 
 if (typeof(sessionStorage.player) === "undefined")
 {
-    var play = new Wizard("Player", 20, new Array(), new MagicItem(itemTypes[0], "Consumable"));
+    var play = new Wizard("Player", 20, new Array(), null);
     for (var i = 0; i < 4; i++)
         play.pickUpItem();
     sessionStorage.player = JSON.stringify(play);
 }
 if (typeof(sessionStorage.opponent) === "undefined")
 {
-    var oppo = new Wizard("Opponent", 20, new Array(), new MagicItem(itemTypes[0], "Consumable"));
+    var oppo = new Wizard("Opponent", 20, new Array(), null);
     for (var i = 0; i < 4; i++)
         oppo.pickUpItem();
     sessionStorage.opponent = JSON.stringify(oppo);
@@ -157,32 +132,31 @@ for (var i = 0; i < jsonPlayer.pocket.length; i++)
     switch (jsonPlayer.pocket[i].type)
     {
       case "Negate Attack":
-          jsonPlayerPocket.push(new MagicItem(itemTypes[1], "Consumable"));
+          jsonPlayerPocket.push(new MagicItem(itemTypes[0], "Consumable"));
           break;
       case "Minor Heal":
-          jsonPlayerPocket.push(new MagicItem(itemTypes[2], "Consumable"));
+          jsonPlayerPocket.push(new MagicItem(itemTypes[1], "Consumable"));
           break;
       case "Absorb Energy":
-          jsonPlayerPocket.push(new MagicItem(itemTypes[3], "Consumable"));
+          jsonPlayerPocket.push(new MagicItem(itemTypes[2], "Consumable"));
           break;
-      default:
-          jsonPlayerPocket.push(new MagicItem(itemTypes[0], "Consumable"));
     }
 }
+if (jsonPlayer.selectedItem)
+{
     switch (jsonPlayer.selectedItem.type)
     {
       case "Negate Attack":
-          jsonPlayer.selectedItem = new MagicItem(itemTypes[1], "Consumable");
+          jsonPlayer.selectedItem = new MagicItem(itemTypes[0], "Consumable");
           break;
       case "Minor Heal":
-          jsonPlayer.selectedItem = new MagicItem(itemTypes[2], "Consumable");
+          jsonPlayer.selectedItem = new MagicItem(itemTypes[1], "Consumable");
           break;
       case "Absorb Energy":
-          jsonPlayer.selectedItem = new MagicItem(itemTypes[3], "Consumable");
+          jsonPlayer.selectedItem = new MagicItem(itemTypes[2], "Consumable");
           break;
-      default:
-          jsonPlayer.selectedItem = new MagicItem(itemTypes[0], "Consumable");
     }
+}
 var jsonOpponent = JSON.parse(sessionStorage.opponent);
 var jsonOpponentPocket = new Array();
 for (var k = 0; k < jsonOpponent.pocket.length; k++)
@@ -190,72 +164,96 @@ for (var k = 0; k < jsonOpponent.pocket.length; k++)
     switch (jsonOpponent.pocket[k].type)
     {
       case "Negate Attack":
-          jsonOpponentPocket.push(new MagicItem(itemTypes[1], "Consumable"));
+          jsonOpponentPocket.push(new MagicItem(itemTypes[0], "Consumable"));
           break;
       case "Minor Heal":
-          jsonOpponentPocket.push(new MagicItem(itemTypes[2], "Consumable"));
+          jsonOpponentPocket.push(new MagicItem(itemTypes[1], "Consumable"));
           break;
       case "Absorb Energy":
-          jsonOpponentPocket.push(new MagicItem(itemTypes[3], "Consumable"));
+          jsonOpponentPocket.push(new MagicItem(itemTypes[2], "Consumable"));
           break;
-      default:
-          jsonOpponentPocket.push(new MagicItem(itemTypes[0], "Consumable"));
     }
 }
+if (jsonOpponent.selectedItem)
+{
     switch (jsonOpponent.selectedItem.type)
     {
       case "Negate Attack":
-          jsonOpponent.selectedItem = new MagicItem(itemTypes[1], "Consumable");
+          jsonOpponent.selectedItem = new MagicItem(itemTypes[0], "Consumable");
           break;
       case "Minor Heal":
-          jsonOpponent.selectedItem = new MagicItem(itemTypes[2], "Consumable");
+          jsonOpponent.selectedItem = new MagicItem(itemTypes[1], "Consumable");
           break;
       case "Absorb Energy":
-          jsonOpponent.selectedItem = new MagicItem(itemTypes[3], "Consumable");
+          jsonOpponent.selectedItem = new MagicItem(itemTypes[2], "Consumable");
           break;
-      default:
-          jsonOpponent.selectedItem = new MagicItem(itemTypes[0], "Consumable");
     }
+}
+else
+{
+    jsonOpponent.selectedItem = jsonOpponentPocket[0];
+}
 
 var player = new Wizard(jsonPlayer.type, jsonPlayer.hp, jsonPlayerPocket,
                         jsonPlayer.selectedItem);
 var opponent = new Wizard(jsonOpponent.type, jsonOpponent.hp,
                           jsonOpponentPocket, jsonOpponent.selectedItem);
 
-var itemTypesArray = player.getInitialPocketItems();
-document.getElementById("item1").innerHTML = itemTypesArray[0];
-document.getElementById("item2").innerHTML = itemTypesArray[1];
-document.getElementById("item3").innerHTML = itemTypesArray[2];
-document.getElementById("item4").innerHTML = itemTypesArray[3];
-document.getElementById("item1").style.borderColor = "black";
-document.getElementById("item2").style.borderColor = "black";
-document.getElementById("item3").style.borderColor = "black";
-document.getElementById("item4").style.borderColor = "black";
+function displayPocket() {
+    var pocketDiv = document.getElementById("pocket");
+    while (pocketDiv.firstChild)
+        pocketDiv.removeChild(pocketDiv.firstChild);
+    for (var j = 0; j < player.pocket.length; j++)
+    {
+        var itemLabel = document.createElement("label");
+        itemLabel.className = "item_label";
+        itemLabel.id = "item" + (j + 1);
+        itemLabel.textContent = "Use " + player.pocket[j].type;
+        var itemRadioButton = document.createElement("input");
+        itemRadioButton.type = "radio";
+        itemRadioButton.name = "item";
+        itemRadioButton.value = j;
+        itemRadioButton.for = itemLabel.id;
+        pocketDiv.appendChild(itemRadioButton);
+        pocketDiv.appendChild(itemLabel);
+        pocketDiv.appendChild(document.createElement("br"));
+    }
+    var noItemRadioButton = document.createElement("input");
+    noItemRadioButton.type = "radio";
+    noItemRadioButton.name = "item";
+    noItemRadioButton.checked = true;
+    noItemRadioButton.value = "No Item";
+    pocketDiv.appendChild(noItemRadioButton);
+    var noItemOptionLabel = document.createElement("label");
+    noItemOptionLabel.className = "item_label";
+    noItemOptionLabel.textContent = "Will not use an item";
+    pocketDiv.appendChild(noItemOptionLabel);
+    pocketDiv.appendChild(document.createElement("br"));
+}
 
-document.getElementById("player_hp").innerHTML = player.getHp();
-document.getElementById("opponent_hp").innerHTML = opponent.getHp();
+displayPocket();
+document.getElementById("player_hp").innerHTML = player.hp;
+document.getElementById("opponent_hp").innerHTML = opponent.hp;
 
 var gameOver = false;
 var alreadyClicked = false;
-var opponentItemSelection = 0;
-var playerItemSelectionIndex = 4;
 
 function isGameOver(damage, attacker, defender) {
     var gameOverFlag = false;
-    if (defender.getHp() - damage <= 0 && attacker.getHp() <= 0)
+    if (defender.hp - damage <= 0 && attacker.hp <= 0)
     {
         document.getElementById("game_over_info").innerHTML += "It's a tie!";
         attacker.setHp(0);
         defender.setHp(0);
         gameOverFlag = true;
     }
-    else if (defender.getHp() - damage <= 0)
+    else if (defender.hp - damage <= 0)
     {
         document.getElementById("game_over_info").innerHTML += attacker.type + " Wins! " + defender.type + " Faints!";
         defender.setHp(0);
         gameOverFlag = true;
     }
-    else if (attacker.getHp() <= 0)
+    else if (attacker.hp <= 0)
     {
         document.getElementById("game_over_info").innerHTML += defender.type + " Wins! " + attacker.type + " Faints!";
         attacker.setHp(0);
@@ -263,7 +261,7 @@ function isGameOver(damage, attacker, defender) {
     }
     else
     {
-        defender.setHp(defender.getHp()-damage);
+        defender.setHp(defender.hp-damage);
         gameOverFlag = false;
     }
     return gameOverFlag;
@@ -280,107 +278,28 @@ document.getElementById("reset").onclick=function() {
     opponent.pickUpItem();
     opponent.pickUpItem();
     opponent.pickUpItem();
-    document.getElementById("player_hp").innerHTML = player.getHp();
-    document.getElementById("opponent_hp").innerHTML = opponent.getHp();
+    document.getElementById("player_hp").innerHTML = player.hp;
+    document.getElementById("opponent_hp").innerHTML = opponent.hp;
     gameOver = false;
     document.getElementById("game_over_info").innerHTML = "";
     document.getElementById("p_status_info").innerHTML = "";
     document.getElementById("o_status_info").innerHTML = "";
     alreadyClicked = false;
-    document.getElementById("item1").style.background = "gray";
-    document.getElementById("item2").style.background = "gray";
-    document.getElementById("item3").style.background = "gray";
-    document.getElementById("item4").style.background = "gray";
-    document.getElementById("item1").style.borderColor = "black";
-    document.getElementById("item2").style.borderColor = "black";
-    document.getElementById("item3").style.borderColor = "black";
-    document.getElementById("item4").style.borderColor = "black";
-    var itemTypesArray = player.getInitialPocketItems();
-    document.getElementById("item1").innerHTML = itemTypesArray[0];
-    document.getElementById("item2").innerHTML = itemTypesArray[1];
-    document.getElementById("item3").innerHTML = itemTypesArray[2];
-    document.getElementById("item4").innerHTML = itemTypesArray[3];
-    player.selectedItem.type = "Invalid Item";
-    opponentItemSelection = 0;
-};
-
-document.getElementById("item1").onclick=function() {
-    if (alreadyClicked === false && gameOver === false && this.innerHTML != "")
-    {
-        if (this.style.borderColor === "black")
-        {
-            this.style.borderColor = "red";
-            document.getElementById("item2").style.borderColor = "black";
-            document.getElementById("item3").style.borderColor = "black";
-            document.getElementById("item4").style.borderColor = "black";
-            playerItemSelectionIndex = 0;
-        }
-        else if (this.style.borderColor === "red")
-        {
-            this.style.borderColor = "black";
-            playerItemSelectionIndex = 4;
-        }
-    }
-};
-
-document.getElementById("item2").onclick=function() {
-    if (alreadyClicked === false && gameOver === false && this.innerHTML != "")
-    {
-        if (this.style.borderColor === "black")
-        {
-            this.style.borderColor = "red";
-            document.getElementById("item1").style.borderColor = "black";
-            document.getElementById("item3").style.borderColor = "black";
-            document.getElementById("item4").style.borderColor = "black";
-            playerItemSelectionIndex = 1;
-        }
-        else if (this.style.borderColor === "red")
-        {
-            this.style.borderColor = "black";
-            playerItemSelectionIndex = 4;
-        }
-    }
-};
-
-document.getElementById("item3").onclick=function() {
-    if (alreadyClicked === false && gameOver === false && this.innerHTML != "")
-    {
-        if (this.style.borderColor === "black")
-        {
-            this.style.borderColor = "red";
-            document.getElementById("item1").style.borderColor = "black";
-            document.getElementById("item2").style.borderColor = "black";
-            document.getElementById("item4").style.borderColor = "black";
-            playerItemSelectionIndex = 2;
-        }
-        else if (this.style.borderColor === "red")
-        {
-            this.style.borderColor = "black";
-            playerItemSelectionIndex = 4;
-        }
-    }
-};
-
-document.getElementById("item4").onclick=function() {
-    if (alreadyClicked === false && gameOver === false && this.innerHTML != "")
-    {
-        if (this.style.borderColor === "black")
-        {
-            this.style.borderColor = "red";
-            document.getElementById("item1").style.borderColor = "black";
-            document.getElementById("item2").style.borderColor = "black";
-            document.getElementById("item3").style.borderColor = "black";
-            playerItemSelectionIndex = 3;
-        }
-        else if (this.style.borderColor === "red")
-        {
-            this.style.borderColor = "black";
-            playerItemSelectionIndex = 4;
-        }
-    }
+    displayPocket();
+    player.selectedItem = null;
+    opponent.selectedItem = opponent.pocket[0];
 };
 
 document.getElementById("turn").onclick=function() {
+    var itemsInPocket = document.getElementsByName("item");
+    for (var i = 0; i < itemsInPocket.length - 1; i++)
+    {
+        if (itemsInPocket[i].checked)
+        {
+            player.selectedItem = player.pocket[itemsInPocket[i].value];
+            break;
+        }
+    }
     var damage;
     if (!alreadyClicked)
     {
@@ -390,53 +309,22 @@ document.getElementById("turn").onclick=function() {
             document.getElementById("game_over_info").innerHTML = "";
             document.getElementById("p_status_info").innerHTML = "";
             document.getElementById("o_status_info").innerHTML = "";
-            if (playerItemSelectionIndex != 4)
-            {
-                player.selectItem(playerItemSelectionIndex);
-                switch (playerItemSelectionIndex)
-                {
-                    case 0:
-                        document.getElementById("item1").innerHTML = "";
-                        document.getElementById("item1").style.background = "yellow";
-                        document.getElementById("item1").style.borderColor = "black";
-                        break;
-                    case 1:
-                        document.getElementById("item2").innerHTML = "";
-                        document.getElementById("item2").style.background = "yellow";
-                        document.getElementById("item2").style.borderColor = "black";
-                        break;
-                    case 2:
-                        document.getElementById("item3").innerHTML = "";
-                        document.getElementById("item3").style.background = "yellow";
-                        document.getElementById("item3").style.borderColor = "black";
-                        break;
-                    case 3:
-                        document.getElementById("item4").innerHTML = "";
-                        document.getElementById("item4").style.background = "yellow";
-                        document.getElementById("item4").style.borderColor = "black";
-                        break;
-                }
-                playerItemSelectionIndex = 4;
-            }
             damage = player.attack(opponent);
             gameOver = isGameOver(damage, player, opponent);
-            document.getElementById("player_hp").innerHTML = player.getHp();
-            document.getElementById("opponent_hp").innerHTML = opponent.getHp();
+            document.getElementById("player_hp").innerHTML = player.hp;
+            document.getElementById("opponent_hp").innerHTML = opponent.hp;
         }
         if (gameOver === false)
         {
             document.getElementById("p_status_info").innerHTML = "Opponent Responds With...   ";
-            if (opponentItemSelection < 4)
-            {
-                opponent.selectItem(opponentItemSelection);
-                opponentItemSelection++;
-            }
+            opponent.selectedItem = opponent.pocket[0];
             setTimeout(function() {            
                 damage = opponent.attack(player);
                 gameOver = isGameOver(damage, opponent, player);
-                document.getElementById("player_hp").innerHTML = player.getHp();
-                document.getElementById("opponent_hp").innerHTML = opponent.getHp();
+                document.getElementById("player_hp").innerHTML = player.hp;
+                document.getElementById("opponent_hp").innerHTML = opponent.hp;
                 alreadyClicked = false;
+                displayPocket();
             }, 3500);
         }
     }

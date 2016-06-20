@@ -33,6 +33,10 @@ body {
     text-align: center;
 }
 
+.item_label {
+    color: white;
+}
+
 #game_div {
     position: relative;
 }
@@ -99,15 +103,6 @@ body {
 }
 
 .button_style {
-    margin: 0 0 10px 10px;
-    padding: 5px 20px;
-    background-color: green;
-    border: 2px solid black;
-    border-radius: 20px;
-    color: white;
-    font-size: 1.5em;
-    position: relative;
-    text-align: center;
 }
 
 #game_over_info {
@@ -136,6 +131,14 @@ body {
     top: 600px;
 }
 
-#reset {
-  width: 200px;
+#turn, #reset {
+    margin: 0 0 10px 10px;
+    padding: 5px 20px;
+    background-color: green;
+    border: 2px solid black;
+    border-radius: 20px;
+    color: white;
+    font-size: 1.5em;
+    position: relative;
+    text-align: center;
 }
