@@ -34,21 +34,10 @@ body {
 }
 
 .item_label {
-    color: white;
 }
 
 #game_div {
     position: relative;
-}
-
-.wizard_div {
-    background-color: brown;
-    border: 5px solid black;
-    margin: 10px;
-    padding-right: 10px;
-    padding-left: 10px;
-    width: 300px;
-    position: absolute;
 }
 
 #opponent_wizard_div {
@@ -118,16 +107,14 @@ body {
 }
 
 .sublabel {
-    color: white;
     margin: auto;
     text-align: center;
 }
 
 #duel_status_div {
     background-color: brown;
-    color: white;
     border: 5px solid black;
-    position: absolute;
+    color: white;
     top: 600px;
 }
 

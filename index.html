@@ -47,24 +47,30 @@
         </p>
         </div>
         <input type="button" id="reset" value="Reset Game">
-            <div id="game_div">
-            <div class="wizard_div" id="player_wizard_div">
-                <h1 class="sublabel">Player</h1>
-                <div class="status_div" id="player_status">Hit Points: <span id="player_hp"></span></div>
-                <div id="pocket"></div>
-                <input type="button" id="turn" value="Attack!">
+          <div id="game_div">
+            <div class="container">
+              <div class="row">
+                <div class="col-xs-12 col-sm-6">
+                  <h1 class="sublabel">Player</h1>
+                  <div class="status_div" id="player_status">Hit Points: <span id="player_hp"></span></div>
+                  <div id="pocket"></div>
+                  <input type="button" id="turn" value="Attack!">
+                </div>
+                <div class="col-xs-12 col-sm-6">
+                  <h1 class="sublabel">Opponent</h1>
+                  <div class="status_div" id="opponent_status">Hit Points: <span id="opponent_hp"></span></div>
+                </div>
+              </div>
+              <div class="row">
+                <div id="duel_status_div">
+                  <h1>Most Recent Status:</h1>
+                  <div class="status_info" id="o_status_info"></div>
+                  <div class="status_info" id="p_status_info"></div>
+                  <div id="game_over_info"></div>
+                </div>
+              </div>
             </div>
-            <div class="wizard_div" id="opponent_wizard_div">
-                <h1 class="sublabel">Opponent</h1>
-                <div class="status_div" id="opponent_status">Hit Points: <span id="opponent_hp"></span></div>
-            </div>
-            <div id="duel_status_div">
-                <h1>Most Recent Status:</h1>
-                <div class="status_info" id="o_status_info"></div>
-                <div class="status_info" id="p_status_info"></div>
-                <div id="game_over_info"></div>
-            </div>
-            </div>
+          </div>
         <script src="duel.js" type="text/javascript"></script>
     </body>
 </html>
