@@ -112,14 +112,13 @@ body {
 }
 
 #duel_status_div {
-    background-color: brown;
-    border: 5px solid black;
-    color: white;
     top: 600px;
+    border: 2px solid black;
+    border-radius: 20px;
 }
 
 #turn, #reset {
-    margin: 0 0 10px 10px;
+    margin: 10px 0 10px 10px;
     padding: 5px 20px;
     background-color: green;
     border: 2px solid black;
@@ -128,4 +127,16 @@ body {
     font-size: 1.5em;
     position: relative;
     text-align: center;
+}
+
+#pocket {
+    background-color: yellow;
+    border: 2px solid black;
+    border-radius: 20px;
+    padding: 0 10px 0 10px;
+}
+
+#pocket_outer_div {
+    text-align: center;
+    width: 75%;
 }

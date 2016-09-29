@@ -203,6 +203,10 @@ function displayPocket() {
     var pocketDiv = document.getElementById("pocket");
     while (pocketDiv.firstChild)
         pocketDiv.removeChild(pocketDiv.firstChild);
+    var pocketLabel = document.createElement("label");
+    pocketLabel.textContent = "Available Items for Use:";
+    pocketDiv.appendChild(pocketLabel);
+    pocketDiv.appendChild(document.createElement("br"));
     for (var j = 0; j < player.pocket.length; j++)
     {
         var itemLabel = document.createElement("label");
