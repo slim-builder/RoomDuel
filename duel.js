@@ -5,40 +5,39 @@ function MagicItem(type, category) {
     this.category = category;
 }
 
-function Wizard(type, hp, pocket, selectedItem) {
+function Wizard(type, hp, pocket) {
     this.type = type;
     this.hp = hp;
     this.pocket = pocket;
-    this.selectedItem = selectedItem;
+    this.selectedItem = null;
     
-    this.session = function() {
+    var updateSession = function() {
         if (this.type === "Player")
-            sessionStorage.player = JSON.stringify(this);
+            sessionStorage.setItem("player", JSON.stringify(this));
         else if (this.type === "Opponent")
-            sessionStorage.opponent = JSON.stringify(this);
+            sessionStorage.setItem("opponent", JSON.stringify(this));
     };
 
     this.setHp = function(hp) {
         this.hp = hp;
-        this.session();
+        updateSession.call(this);
     };
     
     this.pickUpItem = function() {
-        var magicItem = new MagicItem(itemTypes[Math.floor(3*Math.random())], "Consumable");
-        this.pocket.push(magicItem);
-        this.session();
+        this.pocket.push(new MagicItem(itemTypes[Math.floor(3*Math.random())], "Consumable"));
+        updateSession.call(this);
     };
     
     this.emptyPocket = function() {
         while (this.pocket.length > 0)
             this.pocket.pop();
-        this.session();
+        updateSession.call(this);
     };
     
     this.reset = function() {
         this.hp = 20;
         this.emptyPocket();
-        this.session();
+        updateSession.call(this);
     };
 
     this.attack = function(wizard) {
@@ -61,7 +60,7 @@ function Wizard(type, hp, pocket, selectedItem) {
             else
                 document.getElementById("p_status_info").innerHTML += "The attack causes the player to gain " + -damage + " HP! ";
         }
-        this.session();
+        updateSession.call(this);
         return damage;
     };
 }
@@ -94,7 +93,7 @@ Wizard.prototype.useItem = function(damage) {
         whichStatusInfo = "o_status_info";
     if (this.selectedItem)
     {
-        document.getElementById(whichStatusInfo).innerHTML += this.type + " uses an item!";    
+        document.getElementById(whichStatusInfo).innerHTML += this.type + " uses an item!";
         newDamage = this.selectedItem.activate(this, damage);
         if (this.selectedItem.type === "Negate Attack")
             document.getElementById(whichStatusInfo).innerHTML += " The item is " + this.selectedItem.type + "! " + this.type + " takes no damage! ";
@@ -110,22 +109,22 @@ Wizard.prototype.useItem = function(damage) {
     return newDamage;
 };
 
-if (typeof(sessionStorage.player) === "undefined")
+if (sessionStorage.getItem("player") === null)
 {
-    var play = new Wizard("Player", 20, new Array(), null);
+    var play = new Wizard("Player", 20, []);
     for (var i = 0; i < 4; i++)
         play.pickUpItem();
-    sessionStorage.player = JSON.stringify(play);
+    sessionStorage.setItem("player", JSON.stringify(play));
 }
-if (typeof(sessionStorage.opponent) === "undefined")
+if (sessionStorage.getItem("opponent") === null)
 {
-    var oppo = new Wizard("Opponent", 20, new Array(), null);
+    var oppo = new Wizard("Opponent", 20, []);
     for (var i = 0; i < 4; i++)
         oppo.pickUpItem();
-    sessionStorage.opponent = JSON.stringify(oppo);
+    sessionStorage.setItem("opponent", JSON.stringify(oppo));
 }
 
-var jsonPlayer = JSON.parse(sessionStorage.player);
+var jsonPlayer = JSON.parse(sessionStorage.getItem("player"));
 var jsonPlayerPocket = new Array();
 for (var i = 0; i < jsonPlayer.pocket.length; i++)
 {
@@ -142,22 +141,8 @@ for (var i = 0; i < jsonPlayer.pocket.length; i++)
           break;
     }
 }
-if (jsonPlayer.selectedItem)
-{
-    switch (jsonPlayer.selectedItem.type)
-    {
-      case "Negate Attack":
-          jsonPlayer.selectedItem = new MagicItem(itemTypes[0], "Consumable");
-          break;
-      case "Minor Heal":
-          jsonPlayer.selectedItem = new MagicItem(itemTypes[1], "Consumable");
-          break;
-      case "Absorb Energy":
-          jsonPlayer.selectedItem = new MagicItem(itemTypes[2], "Consumable");
-          break;
-    }
-}
-var jsonOpponent = JSON.parse(sessionStorage.opponent);
+
+var jsonOpponent = JSON.parse(sessionStorage.getItem("opponent"));
 var jsonOpponentPocket = new Array();
 for (var k = 0; k < jsonOpponent.pocket.length; k++)
 {
@@ -174,30 +159,9 @@ for (var k = 0; k < jsonOpponent.pocket.length; k++)
           break;
     }
 }
-if (jsonOpponent.selectedItem)
-{
-    switch (jsonOpponent.selectedItem.type)
-    {
-      case "Negate Attack":
-          jsonOpponent.selectedItem = new MagicItem(itemTypes[0], "Consumable");
-          break;
-      case "Minor Heal":
-          jsonOpponent.selectedItem = new MagicItem(itemTypes[1], "Consumable");
-          break;
-      case "Absorb Energy":
-          jsonOpponent.selectedItem = new MagicItem(itemTypes[2], "Consumable");
-          break;
-    }
-}
-else
-{
-    jsonOpponent.selectedItem = jsonOpponentPocket[0];
-}
 
-var player = new Wizard(jsonPlayer.type, jsonPlayer.hp, jsonPlayerPocket,
-                        jsonPlayer.selectedItem);
-var opponent = new Wizard(jsonOpponent.type, jsonOpponent.hp,
-                          jsonOpponentPocket, jsonOpponent.selectedItem);
+var player = new Wizard(jsonPlayer.type, jsonPlayer.hp, jsonPlayerPocket);
+var opponent = new Wizard(jsonOpponent.type, jsonOpponent.hp, jsonOpponentPocket);
 
 function displayPocket() {
     var pocketDiv = document.getElementById("pocket");
@@ -236,8 +200,8 @@ function displayPocket() {
 }
 
 displayPocket();
-document.getElementById("player_hp").innerHTML = player.hp;
-document.getElementById("opponent_hp").innerHTML = opponent.hp;
+document.getElementById("player_hp").textContent = player.hp;
+document.getElementById("opponent_hp").textContent = opponent.hp;
 
 var gameOver = false;
 var alreadyClicked = false;
@@ -246,20 +210,20 @@ function isGameOver(damage, attacker, defender) {
     var gameOverFlag = false;
     if (defender.hp - damage <= 0 && attacker.hp <= 0)
     {
-        document.getElementById("game_over_info").innerHTML += "It's a tie!";
+        document.getElementById("game_over_info").textContent += "It's a tie!";
         attacker.setHp(0);
         defender.setHp(0);
         gameOverFlag = true;
     }
     else if (defender.hp - damage <= 0)
     {
-        document.getElementById("game_over_info").innerHTML += attacker.type + " Wins! " + defender.type + " Faints!";
+        document.getElementById("game_over_info").textContent += attacker.type + " Wins! " + defender.type + " Faints!";
         defender.setHp(0);
         gameOverFlag = true;
     }
     else if (attacker.hp <= 0)
     {
-        document.getElementById("game_over_info").innerHTML += defender.type + " Wins! " + attacker.type + " Faints!";
+        document.getElementById("game_over_info").textContent += defender.type + " Wins! " + attacker.type + " Faints!";
         attacker.setHp(0);
         gameOverFlag = true;
     }
@@ -271,30 +235,33 @@ function isGameOver(damage, attacker, defender) {
     return gameOverFlag;
 }
 
-document.getElementById("reset").onclick=function() {
-    player.reset();
-    opponent.reset();
-    player.pickUpItem();
-    player.pickUpItem();
-    player.pickUpItem();
-    player.pickUpItem();
-    opponent.pickUpItem();
-    opponent.pickUpItem();
-    opponent.pickUpItem();
-    opponent.pickUpItem();
-    document.getElementById("player_hp").innerHTML = player.hp;
-    document.getElementById("opponent_hp").innerHTML = opponent.hp;
-    gameOver = false;
-    document.getElementById("game_over_info").innerHTML = "";
-    document.getElementById("p_status_info").innerHTML = "";
-    document.getElementById("o_status_info").innerHTML = "";
-    alreadyClicked = false;
-    displayPocket();
-    player.selectedItem = null;
-    opponent.selectedItem = opponent.pocket[0];
-};
+document.getElementById("reset").addEventListener("click", function() {
+    if (!alreadyClicked || gameOver)
+    {
+	player.reset();
+	opponent.reset();
+	player.pickUpItem();
+	player.pickUpItem();
+	player.pickUpItem();
+	player.pickUpItem();
+	opponent.pickUpItem();
+	opponent.pickUpItem();
+	opponent.pickUpItem();
+	opponent.pickUpItem();
+	document.getElementById("player_hp").innerHTML = player.hp;
+	document.getElementById("opponent_hp").innerHTML = opponent.hp;
+	gameOver = false;
+	document.getElementById("game_over_info").innerHTML = "";
+	document.getElementById("p_status_info").innerHTML = "";
+	document.getElementById("o_status_info").innerHTML = "";
+	alreadyClicked = false;
+	displayPocket();
+	player.selectedItem = null;
+	opponent.selectedItem = opponent.pocket[0];
+    }
+});
 
-document.getElementById("turn").onclick=function() {
+document.getElementById("turn").addEventListener("click", function() {
     var itemsInPocket = document.getElementsByName("item");
     for (var i = 0; i < itemsInPocket.length - 1; i++)
     {
@@ -308,20 +275,20 @@ document.getElementById("turn").onclick=function() {
     if (!alreadyClicked)
     {
         alreadyClicked = true;
-        if (gameOver === false)
+        if (!gameOver)
         {
             document.getElementById("game_over_info").innerHTML = "";
             document.getElementById("p_status_info").innerHTML = "";
             document.getElementById("o_status_info").innerHTML = "";
+            opponent.selectedItem = opponent.pocket[0];
             damage = player.attack(opponent);
             gameOver = isGameOver(damage, player, opponent);
             document.getElementById("player_hp").innerHTML = player.hp;
             document.getElementById("opponent_hp").innerHTML = opponent.hp;
         }
-        if (gameOver === false)
+        if (!gameOver)
         {
             document.getElementById("p_status_info").innerHTML = "Opponent Responds With...   ";
-            opponent.selectedItem = opponent.pocket[0];
             setTimeout(function() {            
                 damage = opponent.attack(player);
                 gameOver = isGameOver(damage, opponent, player);
@@ -329,7 +296,7 @@ document.getElementById("turn").onclick=function() {
                 document.getElementById("opponent_hp").innerHTML = opponent.hp;
                 alreadyClicked = false;
                 displayPocket();
-            }, 3500);
+            }, 1500);
         }
     }
-};
+});
