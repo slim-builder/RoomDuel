@@ -115,6 +115,8 @@ body {
     top: 600px;
     border: 2px solid black;
     border-radius: 20px;
+    padding: 10px 0 100px 0;
+    margin-bottom: 50px;
 }
 
 #turn, #reset {

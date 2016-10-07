@@ -1,7 +1,13 @@
-var itemTypes = ["Negate Attack", "Minor Heal", "Absorb Energy"];
+var itemTypes = ["Negate", "Heal", "Absorb"];
+var itemLevels = ["Minor", "Major", "Max"];
+var itemCategories = ["Consumable"];
+var NUM_OF_ITEM_TYPES = 3;
+var NUM_OF_ITEM_LEVELS = 3;
+var NUM_OF_ITEM_CATEGORIES = 1;
 
-function MagicItem(type, category) {
+function MagicItem(type, level, category) {
     this.type = type;
+    this.level = level;
     this.category = category;
 }
 
@@ -24,7 +30,8 @@ function Wizard(type, hp, pocket) {
     };
     
     this.pickUpItem = function() {
-        this.pocket.push(new MagicItem(itemTypes[Math.floor(3*Math.random())], "Consumable"));
+        this.pocket.push(new MagicItem(Math.floor(NUM_OF_ITEM_TYPES*Math.random()), Math.floor(NUM_OF_ITEM_LEVELS*Math.random()),
+                                       Math.floor(NUM_OF_ITEM_CATEGORIES*Math.random())));
         updateSession.call(this);
     };
     
@@ -41,24 +48,31 @@ function Wizard(type, hp, pocket) {
     };
 
     this.attack = function(wizard) {
+        document.getElementById("duel_status_div").style.paddingBottom = "0px";
         var damage = Math.floor(6*Math.random()) + 1;
         if (this.type === "Player")
         {
-            document.getElementById("o_status_info").innerHTML += "Player attacks with fireball! ";
-            damage = wizard.useItem(damage);
+            document.getElementById("o_status_info").textContent += "Player attacks with fireball! ";
+            document.getElementById("o_status_info").textContent += "Player tries to afflict " + damage + " HP of damage! ";
+            damage = Math.ceil(wizard.useItem(damage));
             if (damage > 0)
-                document.getElementById("o_status_info").innerHTML += "The attack causes the opponent to lose " + damage + " HP! ";
+                document.getElementById("o_status_info").textContent += "Opponent loses " + damage + " HP! ";
+            else if (damage == 0)
+                document.getElementById("o_status_info").textContent += "Opponent takes no damage! ";
             else
-                document.getElementById("o_status_info").innerHTML += "The attack causes the opponent to gain " + -damage + " HP! ";
+                document.getElementById("o_status_info").textContent += "Opponent gains " + -damage + " HP! ";
         }
         else if (this.type === "Opponent")
         {
-            document.getElementById("p_status_info").innerHTML += "Lightning attack! ";
-            damage = wizard.useItem(damage);
+            document.getElementById("p_status_info").textContent += "Lightning attack! ";
+            document.getElementById("p_status_info").textContent += "Opponent tries to afflict " + damage + " HP of damage! ";
+            damage = Math.ceil(wizard.useItem(damage));
             if (damage > 0)
-                document.getElementById("p_status_info").innerHTML += "The attack causes the player to lose " + damage + " HP! ";
+                document.getElementById("p_status_info").textContent += "Player loses " + damage + " HP! ";
+            else if (damage == 0)
+                document.getElementById("p_status_info").textContent += "Player takes no damage! ";
             else
-                document.getElementById("p_status_info").innerHTML += "The attack causes the player to gain " + -damage + " HP! ";
+                document.getElementById("p_status_info").textContent += "Player gains " + -damage + " HP! ";
         }
         updateSession.call(this);
         return damage;
@@ -69,14 +83,14 @@ MagicItem.prototype.activate = function(wizard, damage) {
     var actualDamage = damage;
     switch(this.type)
     {
-        case "Negate Attack":
-            actualDamage = 0;
+        case 0:
+            actualDamage = damage - (damage * (this.level + 1) / 3);
             break;
-        case "Minor Heal":
-            wizard.setHp(wizard.hp + 5);
+        case 1:
+            wizard.setHp(wizard.hp + (3 * this.level) + 3);
             break;
-        case "Absorb Energy":
-            actualDamage = -damage;
+        case 2:
+            actualDamage = 0 - (damage * (this.level + 1) / 3);
             break;
         default:
             actualDamage = damage;
@@ -93,14 +107,20 @@ Wizard.prototype.useItem = function(damage) {
         whichStatusInfo = "o_status_info";
     if (this.selectedItem)
     {
-        document.getElementById(whichStatusInfo).innerHTML += this.type + " uses an item!";
+        document.getElementById(whichStatusInfo).textContent += this.type + " uses an item!";
         newDamage = this.selectedItem.activate(this, damage);
-        if (this.selectedItem.type === "Negate Attack")
-            document.getElementById(whichStatusInfo).innerHTML += " The item is " + this.selectedItem.type + "! " + this.type + " takes no damage! ";
-        else if (this.selectedItem.type === "Minor Heal")
-            document.getElementById(whichStatusInfo).innerHTML += " The item is " + this.selectedItem.type + "! " + this.type + " gains 5 HP! ";
-        else if (this.selectedItem.type === "Absorb Energy")
-            document.getElementById(whichStatusInfo).innerHTML += " The item is " + this.selectedItem.type + "! ";
+        if (this.selectedItem.type === 0)
+            document.getElementById(whichStatusInfo).textContent += " The item is " + itemLevels[this.selectedItem.level] + " " +
+                                                                    itemTypes[this.selectedItem.type] + "! ";
+        else if (this.selectedItem.type === 1)
+        {
+            var hpHealAmount = (3 * this.selectedItem.level) + 3;
+            document.getElementById(whichStatusInfo).textContent += " The item is " + itemLevels[this.selectedItem.level] + " " +
+                                                                    itemTypes[this.selectedItem.type] + "! " + this.type + " heals " + hpHealAmount + " HP! ";
+        }
+        else if (this.selectedItem.type === 2)
+            document.getElementById(whichStatusInfo).textContent += " The item is " + itemLevels[this.selectedItem.level] + " " +
+                                                                    itemTypes[this.selectedItem.type] + "! ";
         var selectedIndex = this.pocket.indexOf(this.selectedItem);
         if (selectedIndex > -1)
             this.pocket.splice(selectedIndex, 1);
@@ -127,38 +147,11 @@ if (sessionStorage.getItem("opponent") === null)
 var jsonPlayer = JSON.parse(sessionStorage.getItem("player"));
 var jsonPlayerPocket = new Array();
 for (var i = 0; i < jsonPlayer.pocket.length; i++)
-{
-    switch (jsonPlayer.pocket[i].type)
-    {
-      case "Negate Attack":
-          jsonPlayerPocket.push(new MagicItem(itemTypes[0], "Consumable"));
-          break;
-      case "Minor Heal":
-          jsonPlayerPocket.push(new MagicItem(itemTypes[1], "Consumable"));
-          break;
-      case "Absorb Energy":
-          jsonPlayerPocket.push(new MagicItem(itemTypes[2], "Consumable"));
-          break;
-    }
-}
-
+    jsonPlayerPocket.push(new MagicItem(jsonPlayer.pocket[i].type, jsonPlayer.pocket[i].level, jsonPlayer.pocket[i].category));
 var jsonOpponent = JSON.parse(sessionStorage.getItem("opponent"));
 var jsonOpponentPocket = new Array();
 for (var k = 0; k < jsonOpponent.pocket.length; k++)
-{
-    switch (jsonOpponent.pocket[k].type)
-    {
-      case "Negate Attack":
-          jsonOpponentPocket.push(new MagicItem(itemTypes[0], "Consumable"));
-          break;
-      case "Minor Heal":
-          jsonOpponentPocket.push(new MagicItem(itemTypes[1], "Consumable"));
-          break;
-      case "Absorb Energy":
-          jsonOpponentPocket.push(new MagicItem(itemTypes[2], "Consumable"));
-          break;
-    }
-}
+    jsonOpponentPocket.push(new MagicItem(jsonOpponent.pocket[k].type, jsonOpponent.pocket[k].level, jsonOpponent.pocket[k].category));
 
 var player = new Wizard(jsonPlayer.type, jsonPlayer.hp, jsonPlayerPocket);
 var opponent = new Wizard(jsonOpponent.type, jsonOpponent.hp, jsonOpponentPocket);
@@ -176,7 +169,7 @@ function displayPocket() {
         var itemLabel = document.createElement("label");
         itemLabel.className = "item_label";
         itemLabel.id = "item" + (j + 1);
-        itemLabel.textContent = "Use " + player.pocket[j].type;
+        itemLabel.textContent = "Use " + itemLevels[player.pocket[j].level] + " " + itemTypes[player.pocket[j].type];
         var itemRadioButton = document.createElement("input");
         itemRadioButton.type = "radio";
         itemRadioButton.name = "item";
@@ -248,16 +241,17 @@ document.getElementById("reset").addEventListener("click", function() {
 	opponent.pickUpItem();
 	opponent.pickUpItem();
 	opponent.pickUpItem();
-	document.getElementById("player_hp").innerHTML = player.hp;
-	document.getElementById("opponent_hp").innerHTML = opponent.hp;
+	document.getElementById("player_hp").textContent = player.hp;
+	document.getElementById("opponent_hp").textContent = opponent.hp;
 	gameOver = false;
-	document.getElementById("game_over_info").innerHTML = "";
-	document.getElementById("p_status_info").innerHTML = "";
-	document.getElementById("o_status_info").innerHTML = "";
+	document.getElementById("game_over_info").textContent = "";
+	document.getElementById("p_status_info").textContent = "";
+	document.getElementById("o_status_info").textContent = "";
 	alreadyClicked = false;
 	displayPocket();
 	player.selectedItem = null;
 	opponent.selectedItem = opponent.pocket[0];
+        document.getElementById("duel_status_div").style.paddingBottom = "100px";
     }
 });
 
@@ -277,23 +271,23 @@ document.getElementById("turn").addEventListener("click", function() {
         alreadyClicked = true;
         if (!gameOver)
         {
-            document.getElementById("game_over_info").innerHTML = "";
-            document.getElementById("p_status_info").innerHTML = "";
-            document.getElementById("o_status_info").innerHTML = "";
+            document.getElementById("game_over_info").textContent = "";
+            document.getElementById("p_status_info").textContent = "";
+            document.getElementById("o_status_info").textContent = "";
             opponent.selectedItem = opponent.pocket[0];
             damage = player.attack(opponent);
             gameOver = isGameOver(damage, player, opponent);
-            document.getElementById("player_hp").innerHTML = player.hp;
-            document.getElementById("opponent_hp").innerHTML = opponent.hp;
+            document.getElementById("player_hp").textContent = player.hp;
+            document.getElementById("opponent_hp").textContent = opponent.hp;
         }
         if (!gameOver)
         {
-            document.getElementById("p_status_info").innerHTML = "Opponent Responds With...   ";
+            document.getElementById("p_status_info").textContent = "Opponent Responds With...   ";
             setTimeout(function() {            
                 damage = opponent.attack(player);
                 gameOver = isGameOver(damage, opponent, player);
-                document.getElementById("player_hp").innerHTML = player.hp;
-                document.getElementById("opponent_hp").innerHTML = opponent.hp;
+                document.getElementById("player_hp").textContent = player.hp;
+                document.getElementById("opponent_hp").textContent = opponent.hp;
                 alreadyClicked = false;
                 displayPocket();
             }, 1500);
