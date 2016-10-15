@@ -1,144 +1,41 @@
-body {
-    background-color: white;
-    font-family: sans-serif;
+.text-white {
+  color: white;
 }
 
-#gametitle {
-    margin: auto;
-    text-align: center;
+.bg-red {
+  background-color: lightcoral;
 }
 
-#gametitleheading {
-    font-size: 40px;
+.bg-blue {
+  background-color: #00ccff;
 }
 
-.subtitle {
-    font-size: 25px;
-    margin: 10px;
-}
-.explanation {
-    font-size: 20px;
-    margin: 10px;
+.bg-green {
+  background-color: lightgreen;
 }
 
-.room {
-    background-color: white;
-    width: 10px;
-    border: 20px solid black;
-    padding: 50px;
-    margin: 50px;
+.pocket-div {
+  background-color: #ff9933;
+  border-radius: 20px;
+  text-align: center;
+  margin-bottom: 10px;
 }
 
-#label {
-    text-align: center;
+.text-top-align {
+  vertical-align: top;
 }
 
-.item_label {
+.row {
+  margin: 10px 0 10px 0;
+  width: 100%;
 }
 
-#game_div {
-    position: relative;
+.status {
+  padding-bottom: 10px;
+  border-radius: 20px;
 }
 
-#opponent_wizard_div {
-    top: 0px;
-    left: 350px;
-}
-
-.status_div {
-    color: white;
-    margin: 20px;
-    text-align: center;
-    line-height: 50px;
-    font-size: 1.5em;
-    border: 2px solid black;
-    border-radius: 100px;
-    padding: 20px;
-}
-
-#items_div {
-}
-
-.item_div {
-    width: 150px;
-    height: 50px;
-    border-radius: 100px;
-    color: white;
-    margin: 20px;
-    text-align: center;
-    line-height: 40px;
-    font-size: 1em;
-    border: 4px solid black;
-    padding-top: 10px;
-    background: gray;
-    position: relative;
-}
-
-#wizard_status_div {
-    width: 500px;
-    float: left;
-}
-
-#player_status {
-    background: blue;
-}
-
-#opponent_status {
-    background: red;
-}
-
-.clear_float {
-    clear: both;
-}
-
-.button_style {
-}
-
-#game_over_info {
-    font-weight: bold;
-    font-size: 1.5em;
-    margin: 40px;
-}
-
-.status_info {
-    font-weight: bold;
-    font-size: 1.2em;
-    margin: 40px;
-}
-
-.sublabel {
-    margin: auto;
-    text-align: center;
-}
-
-#duel_status_div {
-    top: 600px;
-    border: 2px solid black;
-    border-radius: 20px;
-    padding: 10px 0 100px 0;
-    margin-bottom: 50px;
-}
-
-#turn, #reset {
-    margin: 10px 0 10px 10px;
-    padding: 5px 20px;
-    background-color: green;
-    border: 2px solid black;
-    border-radius: 20px;
-    color: white;
-    font-size: 1.5em;
-    position: relative;
-    text-align: center;
-}
-
-#pocket {
-    background-color: yellow;
-    border: 2px solid black;
-    border-radius: 20px;
-    padding: 0 10px 0 10px;
-}
-
-#pocket_outer_div {
-    text-align: center;
-    width: 75%;
+.duel-status {
+  font-size: 1.5em;
+  height: 500px;
 }

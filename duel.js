@@ -48,7 +48,6 @@ function Wizard(type, hp, pocket) {
     };
 
     this.attack = function(wizard) {
-        document.getElementById("duel_status_div").style.paddingBottom = "0px";
         var damage = Math.floor(6*Math.random()) + 1;
         if (this.type === "Player")
         {
@@ -251,7 +250,6 @@ document.getElementById("reset").addEventListener("click", function() {
 	displayPocket();
 	player.selectedItem = null;
 	opponent.selectedItem = opponent.pocket[0];
-        document.getElementById("duel_status_div").style.paddingBottom = "100px";
     }
 });
 
