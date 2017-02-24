@@ -227,7 +227,7 @@ function isGameOver(damage, attacker, defender) {
     return gameOverFlag;
 }
 
-document.getElementById("reset").addEventListener("click", function() {
+var resetGame = function() {
     if (!alreadyClicked || gameOver)
     {
 	player.reset();
@@ -251,7 +251,11 @@ document.getElementById("reset").addEventListener("click", function() {
 	player.selectedItem = null;
 	opponent.selectedItem = opponent.pocket[0];
     }
-});
+};
+
+resetButtons = document.getElementsByClassName("reset");
+for (var j = 0; j < resetButtons.length; j++)
+  resetButtons[j].addEventListener("click", resetGame);
 
 document.getElementById("turn").addEventListener("click", function() {
     var itemsInPocket = document.getElementsByName("item");
